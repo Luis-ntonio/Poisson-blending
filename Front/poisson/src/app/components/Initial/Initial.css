@@ -1,0 +1,7 @@
+.hello{
+    background-color: rgba(240, 240, 240, 0.6);
+}
+
+.hello:hover {
+    background-color: rgba(240, 240, 240, 0.8);
+}

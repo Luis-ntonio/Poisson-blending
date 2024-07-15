@@ -1,0 +1,93 @@
+.a {
+    display: flex;
+    flex-direction: column;
+    width: 98vw;
+    height: 100%;
+}
+.tile {
+    display: grid;
+    place-content: center;
+    width: 100%;
+    height: 100%;
+}
+
+.left{
+    margin-right: 2vw !important;
+}
+
+.right{
+    margin-left: 2vw !important;
+}
+
+.tile .chess-piece {
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+}
+
+.tile .chess-piece:hover {
+    cursor: grab;
+}
+
+.tile .chess-piece:active {
+    cursor: grabbing;
+}
+
+.black-tile {
+    background-color: #f0f0f0 !important
+}
+
+.white-tile {
+    background-color: #ebecd0;
+}
+
+.tile img {
+    width: 100%;
+    height: 100%;
+}
+
+.tile-highlight:not(.chess-piece-tile)::before {
+    content: " ";
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.tile-highlight.chess-piece-tile::before {
+    position: absolute;
+    content: " ";
+    width: 90px;
+    height: 90px;
+    border: 5px solid rgba(0, 0, 0, 0.4);
+    border-radius: 50%;
+}
+
+.btn {
+    transition: all 0.3s ease-in-out;
+    font-family: "Dosis", sans-serif;
+  }
+  
+  .btn {
+    width: 150px;
+    height: 60px;
+    border-radius: 50px;
+    background-image: linear-gradient(135deg, #feb692 0%, #ea5455 100%);
+    box-shadow: 0 20px 30px -6px rgba(238, 103, 97, 0.5);
+    outline: none;
+    cursor: pointer;
+    border: none;
+    font-size: 24px;
+    color: white;
+  }
+  
+  .btn:hover {
+    transform: translateY(3px);
+    box-shadow: none;
+  }
+  
+  .btn:active {
+    opacity: 0.5;
+  }
