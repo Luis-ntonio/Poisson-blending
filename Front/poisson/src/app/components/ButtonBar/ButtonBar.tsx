@@ -22,25 +22,25 @@ const ButtonBar = ({ onSelectBackground, onSelectImage, onRestart, onBlend }: { 
   
     return (
       <div style={styles.bar}>
-        <button style={styles.button} onClick={handleSelectbgClick}>Select Background</button>
-        <button style={styles.button} onClick={handleSelectImageClick}>Select Image</button>
-        <button style={styles.button} onClick={onRestart}>Restart</button>
-        <button style={styles.button} onClick={onBlend}>Blend</button>
-        <input
-          id='input'
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={onSelectImage}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputbgRef}
-          style={{ display: 'none' }}
-          onChange={onSelectBackground}
-        />
+      <button style={styles.button} onClick={handleSelectbgClick}>Select Background</button>
+      <button style={styles.button} onClick={handleSelectImageClick}>Select Image</button>
+      <button style={styles.button} onClick={onRestart}>Restart</button>
+      <button style={styles.button} onClick={onBlend}>Blend</button>
+      <input
+        id='input'
+        type="file"
+        accept="image/*, video/*"
+        ref={fileInputRef}
+        style={{ display: 'none' }}
+        onChange={onSelectImage}
+      />
+      <input
+        type="file"
+        accept="image/*, video/*"
+        ref={fileInputbgRef}
+        style={{ display: 'none' }}
+        onChange={onSelectBackground}
+      />
       </div>
     );
 };

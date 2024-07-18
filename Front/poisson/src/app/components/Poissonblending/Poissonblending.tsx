@@ -13,28 +13,49 @@ interface Props {
 export default function PoissonBlending() {
     const [selectedImage, setSelectedImage] = useState<string | undefined | null>(undefined);
     const [bgImage, setbgImage] = useState<string | undefined | null>(undefined);
+    const [isVideo1, setIsVideo1] = useState<boolean>(false);
+    const [isVideo2, setIsVideo2] = useState<boolean>(false);
 
     const handleSelectBackground = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0];
-        if (file) {
-          const reader = new FileReader();
+      const file = event.target.files?.[0];
+      console.log(file?.type)
+      if (file && file.type.includes('image')) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setbgImage(reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+      else if (file?.type.includes('video')) {
+        const reader = new FileReader();
           reader.onloadend = () => {
             setbgImage(reader.result as string);
           };
-          reader.readAsDataURL(file);
-        }
-      };
+        setIsVideo1(true);
+        reader.readAsDataURL(file);
+      } 
+    }
     
       const handleSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (file) {
+        console.log(event.target.files, "targetsssss")
+        console.log(file?.type)
+        if (file && file.type.includes('image')) {
           const reader = new FileReader();
           reader.onloadend = () => {
             setSelectedImage(reader.result as string);
           };
           reader.readAsDataURL(file);
         }
-      };
+        else if (file?.type.includes('video')) {
+          const reader = new FileReader();
+            reader.onloadend = () => {
+              setSelectedImage(reader.result as string);
+            };
+          setIsVideo2(true);
+          reader.readAsDataURL(file);
+        }
+      }
     
       const handleRestart = () => {
         window.location.reload();
@@ -72,12 +93,12 @@ export default function PoissonBlending() {
           }),
         })
         let data = await response.blob()
-        console.log(data)
         setVars(data)
         var src_ = document.getElementById('2')
         if(src_){
           src_.style.position = 'relative';
-          
+          src_.style.height = '100%';
+          src_.style.width = '100%';
           src_.style.removeProperty("top");
           src_.style.removeProperty("left");
         }
@@ -96,7 +117,7 @@ export default function PoissonBlending() {
             />
             <div className="cont">
                 <div className="Playzone">
-                    <Blend imagebg={bgImage} image={selectedImage}/>
+                    <Blend imagebg={bgImage} image={selectedImage} isVideo1={isVideo1} isVideo2={isVideo2}/>
                 </div>
             </div>
         </div>

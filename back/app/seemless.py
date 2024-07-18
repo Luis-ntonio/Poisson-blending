@@ -10,8 +10,42 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import torch
 
+import concurrent.futures
 
+def get_blended_source(src_img: np.ndarray, mask_list: np.ndarray, target_img: np.ndarray):
+    result = target_img.copy()
 
+    num_patches = 0
+    for zone, src_patch, mask_patch, target_patch in get_patches(src_img, mask_list, target_img):
+        target_top, target_left, target_bottom, target_right = zone
+    
+        blend_patch = do_blending(src_patch, mask_patch, target_patch)
+        result[target_top:target_bottom, target_left:target_right, :] = blend_patch.copy()
+
+        im_list = [(src_patch, 'source'), (mask_patch, 'mask'), (target_patch, 'target'), (blend_patch, 'blend')]
+        
+    return (result * 255).astype('uint8')
+
+def get_video_masks(video_path: str, shape: tuple = None):
+    cap = cv2.VideoCapture(video_path)
+    n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
+        for _ in range(n_frames):
+            ret, frame = cap.read()
+            if not ret:
+                break
+            if shape is not None:
+                frame = cv2.resize(frame, shape[:2][::-1])
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = frame.astype('double') / 255.0
+            futures.append(executor.submit(get_frame_masks, frame))
+
+        for future in concurrent.futures.as_completed(futures):
+            yield future.result()
+    
+    cap.release()
 
 def get_frame_masks(image: str | np.ndarray, mask_class: str = 'segmentation', save_masks: bool = True):
     torch.cuda.set_device(0)
@@ -63,6 +97,22 @@ def source_img__target_img(source: str, target: str):
     source_mask = get_frame_masks(source_img)
     return source_mask
 
+def source_video__target_img_test(source_path: str, background: np.ndarray, mask_):
+    # Preprocesing of image target
+    target_img = background
+    target_img = target_img.astype('double') / 255.0
+    
+
+    # TODO: ajustar el tama;o de source y target a un valor razonable
+    # Obtaining shape of target img to reshaping
+    target_shape = target_img.shape
+    process_shape = (target_shape[0] // 5, target_shape[1] // 5, target_shape[2])
+
+    target_img = cv2.resize(target_img, process_shape[:2][::-1])
+    
+    output = get_video_masks(source_path, shape=process_shape)
+    return output
+
 def seamless_clone(source, target, mask_, center_coordinates):
     # Load the source, target, and mask images
     src = source
@@ -81,8 +131,23 @@ def seamless_clone(source, target, mask_, center_coordinates):
     
     return output
 
-def blend(src, trg, mask_):
+def blend(src, trg, mask_, mode):
     print(torch.cuda.is_available())
-    mask = source_img__target_img(src, trg)
-    out = seamless_clone(src, trg, mask, (int(mask_['x']), int(mask_['y'])))
-    return out
+    if mode == 'img-img':
+        mask = source_img__target_img(src, trg)
+        out = seamless_clone(src, trg, mask, (int(mask_['x']), int(mask_['y'])))
+        return out
+    elif mode == 'video-img':
+        masks = source_video__target_img_test(src, trg, mask_)
+        out = []
+        for mask in masks:
+            out.append(seamless_clone(src, trg, mask, (int(mask_['x']), int(mask_['y']))))
+        # Convert the list of output images to a video
+        output_video = cv2.VideoWriter('output_video.mp4', cv2.VideoWriter_fourcc(*'mp4v'), 30, (out[0].shape[1], out[0].shape[0]))
+
+        for frame in out:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            output_video.write(frame)
+
+        output_video.release()
+        return out

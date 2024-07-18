@@ -5,9 +5,11 @@ interface Props {
   image?: string;
   left?: boolean;
   id: number;
+  class_: string;
+  isVideo?: boolean;
 }
 
-export default function Tile({image, left, id}: Props) {
+export default function Tile({image, left, id, class_, isVideo}: Props) {
     console.log(left);
     
     const [divWidth, setDivWidth] = useState({ width: 300 });
@@ -39,7 +41,8 @@ export default function Tile({image, left, id}: Props) {
   return (
     <div className="a">
       <div className={className} style={{...styles.imageContainer, ...divWidth, ...divheight}}>
-        {image && <div id={id.toString()} style={{ backgroundImage: `url(${image})`, backgroundSize: '100% 100%' }} className="chess-piece"></div>}
+        {!isVideo && image && <div id={id.toString()} style={{ backgroundImage: `url(${image})`, backgroundSize: '100% 100%' }} className={class_}></div>}
+        {isVideo && image && <video id={id.toString()} src={image} autoPlay loop muted style={{width: '100%',height: '100%'}} className={class_}/>}
       </div>
       <div style={styles.buttonContainer}>
         <button className="btn" style={styles.controlButton} onClick={increaseWidth}>Increase Width</button>

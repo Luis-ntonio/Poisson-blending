@@ -7,9 +7,11 @@ import Tile from "../Tile/Tile";
 interface Props {
     image: string | undefined | null;
     imagebg: string | undefined | null;
+    isVideo1: boolean;
+    isVideo2: boolean;
   }
 
-export default function Blend({image, imagebg}: Props) {
+export default function Blend({image, imagebg, isVideo1, isVideo2}: Props) {
     const [activePiece, setActivePiece] = useState<HTMLElement | null>(null);
     const [grabPosition, setGrabPosition] = useState<[Number, Number]>([0, 0]);
     const chessboardRef = useRef<HTMLDivElement>(null);
@@ -23,7 +25,7 @@ export default function Blend({image, imagebg}: Props) {
 
       const GRID_SIZE = height;
 
-      if (element.classList.contains("chess-piece") && chessboard) {
+      if (element.classList.contains("target") && chessboard) {
         const grabX = e.clientX - chessboard.offsetLeft 
         const grabY = Math.abs(e.clientY - chessboard.offsetTop)
         setGrabPosition([grabX, grabY]);
@@ -97,9 +99,10 @@ export default function Blend({image, imagebg}: Props) {
     }
     let board = [];
     let imgbg = imagebg? imagebg : undefined;
+    console.log(imgbg)
     let img = image? image : undefined;
-    board.push(<Tile id={1} image={imgbg} left={true}/>);
-    board.push(<Tile id={2} image={img} left={false}/>);
+    board.push(<Tile id={1} image={imgbg} left={true} class_="bg" isVideo={isVideo1}/>);
+    board.push(<Tile id={2} image={img} left={false} class_="target" isVideo={isVideo2}/>);
     console.log(grabPosition)
     return (
     <>
