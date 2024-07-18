@@ -47,7 +47,7 @@ def get_blend():
     reqImg, MODE = get_image(img['url'], img['width'], img['height'], "img-img")    
     reqBgImg, MODE = get_image(bgimg['url'], bgimg['width'], bgimg['height'], MODE)
     # Perform the blending
-    output = blend(reqBgImg, reqImg, mask_position, MODE)
+    output = blend(reqImg, reqBgImg, mask_position, MODE)
     # Return the blended image
     cv2.imwrite('output.jpg', output)
     _, buffer = cv2.imencode('.png', output)
